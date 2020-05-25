@@ -98,27 +98,6 @@ module "container_definition_prometheus" {
     },
     secretOptions = []
   }
-  
-  #healthcheck                  = var.healthcheck
-  #entrypoint                   = var.entrypoint
-  #command                      = var.command
-  #working_directory            = var.working_directory
-  #secrets                      = var.secrets
-  #readonly_root_filesystem     = var.readonly_root_filesystem
-  #linux_parameters             = var.linux_parameters
-  #firelens_configuration       = var.firelens_configuration
-
-  #dns_servers                  = var.dns_servers
-  #ulimits                      = var.ulimits
-  #docker_labels                = var.docker_labels
-  #repository_credentials       = var.repository_credentials
-  #volumes_from                 = var.volumes_from
-  #links                        = var.links
-  #user                         = var.user
-  #container_depends_on         = var.container_depends_on
-  #start_timeout                = var.start_timeout
-  #stop_timeout                 = var.stop_timeout
-  #system_controls              = var.system_controls
 }
 
 # module "container_definition_ecsdiscovery" {
