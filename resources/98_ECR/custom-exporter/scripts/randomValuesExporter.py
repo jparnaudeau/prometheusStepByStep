@@ -35,7 +35,9 @@ if __name__ == '__main__':
         customMetricLabel = str(randomNumber1)
 
         if customMetricLabel in mapValues:
-            mapGauges['custom_metric'].inc()
+            nbOccurrences = mapValues[customMetricLabel] + 1
+            mapGauges['custom_metric'].labels(nb=str(randomNumber1),env=environment,status='dot').set(nbOccurrences)
+            mapValues[customMetricLabel] = nbOccurrences
         else:
             mapValues[customMetricLabel] = 1
             mapGauges['custom_metric'].labels(nb=str(randomNumber1),env=environment,status='dot').set(1)
