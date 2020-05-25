@@ -1,6 +1,6 @@
 # Deploy a lambda function
 
-This Terraform module allows deploying a lambda function inside or outside a VPC, conforming to CDO best practices and guidelines available [here](https://confluence.eulerhermes.com/display/ICD/CDG+-+AWS+Lambda+best+practices).
+This Terraform module allows deploying a lambda function inside or outside a VPC.
 
 This module creates the following resources:
 
@@ -12,7 +12,6 @@ Lambda to be created or updated with all corresponding configuration parameters.
 
 The created alias always points to the latest published version, the alias abstract the process of promoting new function version to specific stage when new function is published. 
 
-> The canary release configuration is not yet supported by the module, however, if you start using (or you are using) canary release with lambda, let the cloudfoundation know about your requirements through a gitlab issue [here](https://gitlab.eulerhermes.com/cloud-devops/terraform-modules/lambda/issues), so we can make all necessary changes.   
 
 ### 3.Cloudwatch log group
 
@@ -25,20 +24,13 @@ A lambda execution role to be created, in the case an existing role is not provi
 
 ## Usage
 
-### :warning: Important note:
-
-To better control module versions & avoid unexpected breaking failure to your infrastructure, we highly recommand you using **explicitly a version tag of this module** instead of branch reference since the latter is changing frequently. (use **ref=v3.0.0**,  dont use **ref=master**)    
-
-
-> Full fledged lambda use cases are provided under **components examples** gitlab group  [here](https://gitlab.eulerhermes.com/deployment/component-examples/lambda)
-
 #### Lambda Inside VPC without role 
 
 The use case when you need to create a lambda with specific permissions beside basic execution permissions:
 
 ```hcl
 module "lambda" {
-  source = "git::ssh://git@gitlab.eulerhermes.io/cloud-devops/terraform-modules/lambda.git?ref=v3.0.0"
+  source = "../modules/lambda"
 
   filename    = data.archive_file.lambda_src.output_path
   handler     = "handler.handler"
@@ -76,9 +68,8 @@ module "lambda" {
 
   tags {
     "Environment" = "sandbox"
-    "Owner"       = "itclouddevops@eulerhermes.com"
+    "Owner"       = "jparnaudeau"
     "Application" = "lambda-v2"
-    "CostCenter"  = "cloudfoundation"
   }
 }
 ```
@@ -91,7 +82,7 @@ In the case where you need to attach multiple lambda functions with the same rol
 ```hcl
 
 module "lambda_role" {
-  source = "git::ssh://git@gitlab.eulerhermes.io/cloud-devops/terraform-modules/lambda.git?ref=v3.0.0"
+  source = "../modules/lambda"
 
   filename    = data.archive_file.lambda_src.output_path
   handler     = "handler.handler"
@@ -123,9 +114,8 @@ module "lambda_role" {
 
   tags {
     "Environment" = "sandbox"
-    "Owner"       = "itclouddevops@eulerhermes.com"
+    "Owner"       = "jparnaudeau"
     "Application" = "lambda-v2"
-    "CostCenter"  = "cloudfoundation"
   }
 }
 ```
@@ -136,7 +126,7 @@ You can grant specific list of resources arn permissions to invoke the lambda fu
 
 ```hcl
 module "lambda" {
-  source = "git::ssh://git@gitlab.eulerhermes.io/cloud-devops/terraform-modules/lambda.git?ref=v3.0.0"
+  source = "../modules/lambda"
 
   # ... some config ...
 
@@ -167,7 +157,7 @@ Lambda layers make it possible to decouple lambda code from generic & third part
 ```hcl
 
 module "lambda" {
-  source = "git::ssh://git@gitlab.eulerhermes.io/cloud-devops/terraform-modules/lambda.git?ref=v3.0.0"
+  source = "../modules/lambda"
 
   # ... some config ...
 
@@ -178,7 +168,7 @@ module "lambda" {
 
 resource "aws_lambda_layer_version" "lambda_layer" {
   filename   = "lambda_layer_payload.zip"
-  layer_name = "eh_lambda_layer"
+  layer_name = "lambda_layer"
 
   compatible_runtimes = ["python3.7"]
 }
@@ -201,19 +191,6 @@ You can find all input variables & outputs of the module [here](doc.md).
 
 ## Release notes
 
-Release notes are available [here](https://gitlab.eulerhermes.com/cloud-devops/terraform-modules/lambda/-/releases). 
+Release notes are available [here](https://github.com/jparnaudeau/prometheusStepByStep/releases). 
 
-
-## Bug Reports & Feature Requests 
-
-Bug reports & feature requests should be reported in gitlab [here](https://gitlab.eulerhermes.com/cloud-devops/terraform-modules/lambda/issues), before submitting an issue or a merge request, please check our [submission guidlines](CONTRIBUTING.md)
-
-
-## Contributing
-
-The CloudFoundation is a small team that cannot garantee maintaining and imporving all ouf our terraform module portofilio. To build more comprehensive & better terraform modules by adding and laveraging features that meet your business cases, we need your contribution to maintain & move toward our EH DevOps accelerator portofolio.
-
-We are adopting an open source approach, where **every single Dev(Ops) @ EH** can "Commit" to **every terraform module**, we are confident this approach will lead to higher-quality modules but also will make it easier to use thoses modules.
-
-**You want to participate ?** Checkout our guidlines for [contributing](CONTRIBUTING.md).  
 
