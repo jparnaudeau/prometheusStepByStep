@@ -1,6 +1,6 @@
 global:
   smtp_from: 'Alertmanager <alertmanager@sre-ippon.fr>'
-  smtp_smarthost: 'ippon.smtp.fr:25'
+  smtp_smarthost: 'my.smtp.fr:25'
   smtp_require_tls: false
 
 # group_wait : 
@@ -46,7 +46,7 @@ receivers:
 # receiver for default route : mail to the newirp team
 - name: mail-to-sre-team
   email_configs:
-  - to: 'sre@ippon.fr'
+  - to: 'sre@acme.com'
     require_tls: false
     send_resolved: true
     html: '{{ template "email.cf.html" . }}'
