@@ -1,0 +1,101 @@
+# my global config
+global:
+  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+
+#############################
+# DECLARE ALERTING FOR OUR PROMETHEUS
+#############################
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+      - targets:
+        - ippenvent-alertmanager.sbx.aws.ippon.fr:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  - 'rules/*.yml'
+  - 'rules/*.yaml'
+
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+
+#############################
+# JOB Definition : retrieve internal metrics from prometheus
+#############################
+  - job_name: 'prometheus'
+    static_configs:
+    - targets: ['localhost:9090']
+
+#############################
+# JOB Definition : Metrics on AlertManager
+#############################
+  - job_name: 'alertmanager'
+    scrape_interval: 60s
+    scrape_timeout: 30s
+    metrics_path: "/metrics"
+    scheme: http
+    static_configs:
+      - targets:
+          - ippenvent-alertmanager.sbx.aws.ippon.fr:9093
+
+#############################
+# JOB Definition : Retrieve Metrics on Healtcheck on http
+#############################
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+     module: [http_2xx]
+    scheme: http
+    static_configs:
+     - targets:
+       - https://www.ugc.fr/
+       - https://www.carrefour.fr/
+       - https://www.americanexpress.com/fr/
+    relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - target_label: __address__
+      replacement: ippenvent-blackbox.sbx.aws.ippon.fr:9115
+
+#############################
+# JOB Definition : PushGateway
+#############################
+  - job_name: 'pushgateway'
+    honor_labels: true
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['ippenvent-pushgateway.sbx.aws.ippon.fr:9091']
+        labels:
+          group: 'test'
+
+#############################
+# JOB Definition : Node Exporter on EC2 Service Discovery
+#############################
+  # ec2 pi calculation
+  - job_name: 'ec2-picalculation'
+    scheme: http
+    metrics_path: '/metrics'
+    ec2_sd_configs:
+      - port: 9100
+        refresh_interval: 60s
+        region: eu-west-3
+    relabel_configs:
+        # Only monitor instances with a Name starting with "ippevent-sandbox-pi-calculation"
+      - source_labels: [__meta_ec2_tag_Name]
+        regex: ippevent.+-pi-calculation.*
+        action: keep
+        # Use the tag Name as the instance label
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: name
+        # retrieve the ip address
+      - source_labels: [__meta_ec2_private_ip]
+        target_label: ipaddress
+

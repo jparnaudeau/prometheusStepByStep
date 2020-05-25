@@ -1,0 +1,24 @@
+{
+  "name": "gatling-template",
+  "version": "1.0.0",
+  "description": "Cible par défaut du test gatling. Permet de simuler les réponses et les latences",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.eulerhermes.com:fboulet/gatling-template.git"
+  },
+  "author": "fredb",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "express-http-proxy": "^1.6.0",
+    "lodash": "^4.17.11",
+    "prom-client": "^11.3.0",
+    "prometheus-gc-stats": "^0.6.2"
+  }
+}
+

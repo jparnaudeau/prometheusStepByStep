@@ -1,0 +1,42 @@
+modules:
+  http_2xx:
+    prober: http
+    timeout: 15s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+      valid_status_codes: [200,302,301,401]  # Defaults to 2xx
+      method: GET
+      no_follow_redirects: false
+      fail_if_ssl: false
+      fail_if_not_ssl: false
+      tls_config:
+        insecure_skip_verify: true
+      preferred_ip_protocol: "ip4" # defaults to "ip6"
+      ip_protocol_fallback: false  # no fallback to "ip6"
+
+  http_post_2xx:
+    prober: http
+    timeout: 15s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+      valid_status_codes: [200,302,301,401]  # Defaults to 2xx
+      method: POST
+      no_follow_redirects: false
+      fail_if_ssl: false
+      fail_if_not_ssl: false
+      tls_config:
+        insecure_skip_verify: true
+      preferred_ip_protocol: "ip4" # defaults to "ip6"
+      ip_protocol_fallback: false  # no fallback to "ip6"
+
+  dns_ippon:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "blog.ippon.fr"
+      query_type: "A"
+      valid_rcodes:
+      - NOERROR
+      validate_answer_rrs:
+        fail_if_not_matches_regexp:
+        - blog.ippon.fr.\t\d*\tIN\tA\t46.245.225.34

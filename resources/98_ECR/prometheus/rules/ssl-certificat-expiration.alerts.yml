@@ -1,0 +1,12 @@
+groups:
+- name: ssl-certificat-expiration.rules
+  rules:
+  - alert: CertificatExpiration
+    expr: (probe_ssl_earliest_cert_expiry{instance=~"https.*"} - time() ) / 86400 < 30
+    for: 720m
+    labels:
+      severity: warning
+    annotations:
+      summary: "SSL Certificat expires soon"
+      description: "The SSL Certificat available at {{ $labels }} expires in {{ $value }} days."
+

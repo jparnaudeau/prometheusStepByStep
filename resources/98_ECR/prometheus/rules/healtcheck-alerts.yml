@@ -1,0 +1,19 @@
+groups:
+- name: healtcheck.rules
+  rules:
+  - alert: UGC
+    expr: probe_success{instance="https://www.ugc.fr/",job="blackbox"} == 0
+    for: 10s
+    labels:
+      severity: "warning"
+    annotations:
+      summary: "Endpoint {{ $labels.instance }} is DOWN"
+
+  - alert: Carrefour
+    expr: probe_success{instance="https://www.carrefour.fr/",job="blackbox"} == 1
+    for: 10s
+    labels:
+      severity: "warning"
+    annotations:
+      summary: "Endpoint {{ $labels.instance }} is DOWN"
+

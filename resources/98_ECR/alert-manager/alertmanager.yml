@@ -1,0 +1,67 @@
+global:
+  smtp_from: 'Alertmanager <alertmanager@sre-ippon.fr>'
+  smtp_smarthost: 'ippon.smtp.fr:25'
+  smtp_require_tls: false
+
+# group_wait : 
+# How long to initially wait to send a notification for a group
+# of alerts. Allows to wait for an inhibiting alert to arrive or collect
+# more initial alerts for the same group. (Usually ~0s to few minutes.)
+# default : 30 seconds
+#
+# group_interval : 
+#  How long to wait before sending a notification about new alerts that
+# are added to a group of alerts for which an initial notification has
+# already been sent. (Usually ~5m or more.)
+# default : 5 min
+#
+# repeat_interval : 
+# How long to wait before sending a notification again if it has already
+# been sent successfully for an alert. (Usually ~3h or more).
+# default : 3h
+templates:
+  - /templates/*.tmpl
+
+route:
+  # define the default route
+  receiver: mail-to-sre-team
+  group_by: ['incident']
+  group_wait:      120s
+  group_interval:  30m
+  repeat_interval: 1h
+
+  # define custom routes
+  routes:
+    - receiver: call-of-duty-phone
+      match:
+         severity: 'critical'
+
+    - receiver: sre-pagerduty
+      match:
+         pagerduty: 'enable'
+
+# define communication channels
+receivers:
+
+# receiver for default route : mail to the newirp team
+- name: mail-to-sre-team
+  email_configs:
+  - to: 'sre@ippon.fr'
+    require_tls: false
+    send_resolved: true
+    html: '{{ template "email.cf.html" . }}'
+    headers:
+      subject: '{{ template "email.cf.subject" . }}'
+
+# receiver for pagerduty integration : DO NOT USED
+- name: sre-pagerduty
+  pagerduty_configs:
+  - service_key: 123456789123456789123456789
+
+# receiver for publishing alerts into a topic SNS
+# https://github.com/DataReply/alertmanager-sns-forwarder
+- name: call-of-duty-phone
+  webhook_configs:
+  - send_resolved: true
+    url: http://_SNSFORWARDER_TASK_NAME_:9087/alert/top-@ENV@-alertmanager
+
